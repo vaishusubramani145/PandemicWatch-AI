@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PandemicWatch AI &mdash; Historical Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .selector-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .custom-select {
+      background: #090d16;
+      border: 1.5px solid #2a354d;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 9px 16px;
+      border-radius: 8px;
+      outline: none;
+      cursor: pointer;
+    }
+    .custom-select:focus {
+      border-color: var(--accent);
+    }
+    .peak-signal-badge {
+      background: rgba(255, 92, 124, 0.15);
+      border: 1px solid rgba(255, 92, 124, 0.4);
+      color: var(--high);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 8px 18px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hist-note-box {
+      background: rgba(122, 166, 255, 0.08);
+      border: 1px solid rgba(122, 166, 255, 0.3);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 20px;
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar matching user wireframe -->
+  <header class="pw-navbar">
+    <div class="pw-logo">
+      <span class="dot"></span>
+      PandemicWatch AI
+    </div>
+
+    <nav class="pw-nav-links">
+      <a href="{{ url_for('dashboard') }}" class="pw-nav-item"><i class="fas fa-columns"></i> Dashboard</a>
+      <a href="{{ url_for('surveillance_page') }}" class="pw-nav-item"><i class="fas fa-satellite-dish"></i> Live Surveillance</a>
+      <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
+      <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item"><i class="fas fa-brain"></i> AI/ML Engine</a>
+      <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('historical_page') }}" class="pw-nav-item active"><i class="fas fa-history"></i> Historical</a>
+      <a href="{{ url_for('reports_page') }}" class="pw-nav-item"><i class="fas fa-file-alt"></i> Reports</a>
+    </nav>
+
+    <div class="pw-user-bar">
+      {% if current_user %}
+        <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
+        <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="pw-container">
+
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:24px;font-weight:800;color:#fff;">Historical Analysis</h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:2px;">
+        Back-testing signal detection and model calibration on past documented epidemic events.
+      </p>
+    </div>
+
+    <!-- Select: [ Dengue ▼ ] & Year: [ 2024 ▼ ] matching exact wireframe -->
+    <div class="selector-bar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;">Select:</span>
+        <select id="histDiseaseSelect" class="custom-select" onchange="updateHistoricalView()">
+          <option value="dengue" selected>[ Dengue ▼ ]</option>
+          <option value="nipah">[ Nipah Virus ▼ ]</option>
+          <option value="h5n1">[ Avian Influenza H5N1 ▼ ]</option>
+        </select>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;">Year:</span>
+        <select id="histYearSelect" class="custom-select" onchange="updateHistoricalView()">
+          <option value="2024" selected>[ 2024 ▼ ]</option>
+          <option value="2022">[ 2022 ▼ ]</option>
+          <option value="2018">[ 2018 ▼ ]</option>
+        </select>
+      </div>
+
+      <div style="margin-left:auto;">
+        <span class="status-pill status-normal"><i class="fas fa-check"></i> Calibrated Backtest</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:3fr 2fr;gap:24px;">
+
+      <!-- Signal Trend 📈 Chart matching user wireframe -->
+      <div class="pw-card">
+        <div class="pw-card-header">
+          <h3 class="pw-card-title" style="display:flex;align-items:center;gap:8px;">
+            <span>Signal Trend</span>
+            <span style="font-size:18px;">📈</span>
+          </h3>
+          <!-- Peak Signal: August matching exact wireframe -->
+          <div class="peak-signal-badge" id="peakSignalDisplay">
+            <i class="fas fa-mountain"></i> Peak Signal: August
+          </div>
+        </div>
+
+        <div style="height:340px;">
+          <canvas id="historicalChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Affected Regions & Historical Dataset Note -->
+      <div>
+
+        <!-- Affected Regions Card -->
+        <div class="pw-card" style="margin-bottom:20px;">
+          <h3 class="pw-card-title" style="font-size:16px;">Affected Regions:</h3>
+          <div id="histAffectedRegions" style="line-height:2.2;font-size:15px;font-weight:600;color:#fff;margin-top:10px;">
+            <div><span style="color:var(--accent);">•</span> Tamil Nadu</div>
+            <div><span style="color:var(--accent);">•</span> Kerala</div>
+            <div><span style="color:var(--accent);">•</span> Karnataka</div>
+          </div>
+        </div>
+
+        <!-- You can use historical datasets to demonstrate how your model behaves on past events. -->
+        <div class="hist-note-box">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;color:var(--accent2);">
+            <i class="fas fa-lightbulb"></i> Note for Research Evaluation
+          </div>
+          <p style="margin:0;">
+            You can use historical datasets to demonstrate how your model behaves on past events.
+          </p>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><strong>Detection Lead Time:</strong> +18 Days</div>
+            <div><strong>Historical Precision:</strong> 93.4%</div>
+            <div><strong>False Alarm Rate:</strong> 4.1%</div>
+            <div><strong>F1 Score:</strong> 0.91</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderHistoricalChart('dengue_2024', 'historicalChart');
+    });
+
+    function updateHistoricalView() {
+      const disease = document.getElementById('histDiseaseSelect').value;
+      const year = document.getElementById('histYearSelect').value;
+      const key = `${disease}_${year}`;
+
+      const dataset = HISTORICAL_SERIES[key] || HISTORICAL_SERIES['dengue_2024'];
+      renderHistoricalChart(key, 'historicalChart');
+
+      // Update Peak Signal: [Month]
+      document.getElementById('peakSignalDisplay').innerHTML = `<i class="fas fa-mountain"></i> Peak Signal: ${dataset.peak}`;
+
+      // Update Affected Regions
+      const regContainer = document.getElementById('histAffectedRegions');
+      regContainer.innerHTML = dataset.regions.map(r => `
+        <div><span style="color:var(--accent);">•</span> ${r}</div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

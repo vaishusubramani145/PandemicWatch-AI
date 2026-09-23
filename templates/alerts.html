@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PandemicWatch AI &mdash; Alert System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* Exact User Wireframe Alert Styling */
+    .alert-wireframe-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .alert-block {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 22px 26px;
+      margin-bottom: 20px;
+      transition: transform 0.15s ease;
+      position: relative;
+    }
+    .alert-block:hover {
+      transform: translateY(-2px);
+    }
+    .alert-block-high {
+      border: 1.5px solid rgba(255, 92, 124, 0.4);
+      border-left: 6px solid var(--high);
+    }
+    .alert-block-med {
+      border: 1.5px solid rgba(250, 204, 21, 0.4);
+      border-left: 6px solid var(--med);
+    }
+    .alert-block-norm {
+      border: 1.5px solid rgba(74, 222, 128, 0.4);
+      border-left: 6px solid var(--low);
+    }
+    .alert-header-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .alert-region {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .alert-message {
+      color: #cbd5e1;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .alert-action-box {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar matching user wireframe -->
+  <header class="pw-navbar">
+    <div class="pw-logo">
+      <span class="dot"></span>
+      PandemicWatch AI
+    </div>
+
+    <nav class="pw-nav-links">
+      <a href="{{ url_for('dashboard') }}" class="pw-nav-item"><i class="fas fa-columns"></i> Dashboard</a>
+      <a href="{{ url_for('surveillance_page') }}" class="pw-nav-item"><i class="fas fa-satellite-dish"></i> Live Surveillance</a>
+      <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
+      <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item"><i class="fas fa-brain"></i> AI/ML Engine</a>
+      <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item active"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('historical_page') }}" class="pw-nav-item"><i class="fas fa-history"></i> Historical</a>
+      <a href="{{ url_for('reports_page') }}" class="pw-nav-item"><i class="fas fa-file-alt"></i> Reports</a>
+    </nav>
+
+    <div class="pw-user-bar">
+      {% if current_user %}
+        <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
+        <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="pw-container">
+
+    <div class="alert-wireframe-container">
+
+      <!-- Header matching user wireframe: 🔔 ALERTS -->
+      <div style="text-align:center;margin-bottom:32px;">
+        <h1 style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:900;color:#fff;letter-spacing:0.1em;display:flex;align-items:center;justify-content:center;gap:12px;">
+          <span>🔔</span>
+          <span>ALERTS</span>
+        </h1>
+        <p style="color:var(--muted);font-size:13px;margin-top:4px;">
+          Automated threshold trigger dispatched to district health surveillance nodes.
+        </p>
+      </div>
+
+      <!-- 🔴 HIGH RISK - Tamil Nadu -->
+      <div class="alert-block alert-block-high">
+        <div class="alert-header-row" style="color:var(--high);">
+          <span>🔴</span>
+          <span>HIGH RISK</span>
+        </div>
+        <div class="alert-region">Tamil Nadu</div>
+        <div class="alert-message">Respiratory disease signals increased.</div>
+        <div class="alert-action-box">
+          <span style="color:var(--muted);"><i class="fas fa-shield-virus" style="color:var(--high);margin-right:6px;"></i> Protocol: Rapid clinical triage response</span>
+          <span class="status-pill status-high">Risk Score: 72</span>
+        </div>
+      </div>
+
+      <!-- 🟡 MEDIUM RISK - Kerala -->
+      <div class="alert-block alert-block-med">
+        <div class="alert-header-row" style="color:var(--med);">
+          <span>🟡</span>
+          <span>MEDIUM RISK</span>
+        </div>
+        <div class="alert-region">Kerala</div>
+        <div class="alert-message">Increasing disease-related reports.</div>
+        <div class="alert-action-box">
+          <span style="color:var(--muted);"><i class="fas fa-binoculars" style="color:var(--med);margin-right:6px;"></i> Protocol: Enforce contact tracing & sentinel tracking</span>
+          <span class="status-pill status-med">Risk Score: 58</span>
+        </div>
+      </div>
+
+      <!-- 🟢 NORMAL - Karnataka -->
+      <div class="alert-block alert-block-norm">
+        <div class="alert-header-row" style="color:var(--low);">
+          <span>🟢</span>
+          <span>NORMAL</span>
+        </div>
+        <div class="alert-region">Karnataka</div>
+        <div class="alert-message">No significant abnormal signal detected.</div>
+        <div class="alert-action-box">
+          <span style="color:var(--muted);"><i class="fas fa-check-circle" style="color:var(--low);margin-right:6px;"></i> Protocol: Routine sentinel weekly surveillance</span>
+          <span class="status-pill status-low">Risk Score: 24</span>
+        </div>
+      </div>
+
+      <!-- Additional historical triggers -->
+      {% for alert in extra_alerts %}
+      <div class="alert-block {% if 'HIGH' in alert.level %}alert-block-high{% elif 'MEDIUM' in alert.level %}alert-block-med{% else %}alert-block-norm{% endif %}">
+        <div class="alert-header-row" style="{% if 'HIGH' in alert.level %}color:var(--high);{% elif 'MEDIUM' in alert.level %}color:var(--med);{% else %}color:var(--low);{% endif %}">
+          <span>{{ alert.icon or '⚠️' }}</span>
+          <span>{{ alert.level }}</span>
+        </div>
+        <div class="alert-region">{{ alert.region }}</div>
+        <div class="alert-message">{{ alert.message }}</div>
+        <div class="alert-action-box">
+          <span style="color:var(--muted);"><i class="fas fa-info-circle"></i> {{ alert.action or 'Routine monitoring' }}</span>
+          <span class="status-pill {% if 'HIGH' in alert.level %}status-high{% elif 'MEDIUM' in alert.level %}status-med{% else %}status-low{% endif %}">
+            Score: {{ alert.score }}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+  </main>
+
+</body>
+</html>

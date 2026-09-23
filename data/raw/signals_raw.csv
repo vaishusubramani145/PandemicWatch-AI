@@ -1,0 +1,6 @@
+id,timestamp,source,location,disease,headline,text,temp,humidity,search_index
+1,2026-09-23T06:00:00Z,The Hindu,Tamil Nadu,Respiratory Infection,Chennai hospitals report cluster of febrile respiratory illness,Acute fever and cough cases presenting to clinics,28.4,78,76
+2,2026-09-22T14:30:00Z,ProMED RSS,Kerala,Nipah Virus,Two pediatric encephalitis cases under investigation in Kozhikode,Patients admitted with severe fever and confusion,27.1,85,92
+3,2026-09-21T09:15:00Z,Animal Husbandry,Maharashtra,Avian Flu H5N1,Poultry deaths reported in Nagpur rural sector,Samples sent to Western Regional Disease Diagnostic Lab,26.5,65,58
+4,2026-09-20T11:00:00Z,IDSP IHIP,Karnataka,Dengue,Bengaluru urban wards show steady baseline vector counts,Routine post-monsoon inspection,24.8,72,34
+5,2026-09-19T16:45:00Z,Municipal Corp,West Bengal,Cholera,Localized acute watery diarrhea in northern wards,Water pipeline repair ongoing,30.1,82,46

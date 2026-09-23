@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PandemicWatch AI &mdash; Intelligence Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .report-type-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .report-type-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .report-type-btn:hover, .report-type-btn.active {
+      color: #fff;
+      border-color: var(--accent);
+      background: rgba(62, 226, 192, 0.1);
+    }
+    .report-wireframe-card {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #090d16;
+      border: 1.5px solid #2a354d;
+      border-radius: 12px;
+      padding: 32px 36px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
+      line-height: 1.8;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .report-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .report-subtitle {
+      font-size: 13px;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 0.05em;
+    }
+    .report-stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14.5px;
+    }
+    .report-divider {
+      border: none;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      margin: 16px 0;
+    }
+    .btn-download-report {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: var(--grad);
+      color: #06121a;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 24px;
+      letter-spacing: 0.05em;
+    }
+    .btn-download-report:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar matching user wireframe -->
+  <header class="pw-navbar">
+    <div class="pw-logo">
+      <span class="dot"></span>
+      PandemicWatch AI
+    </div>
+
+    <nav class="pw-nav-links">
+      <a href="{{ url_for('dashboard') }}" class="pw-nav-item"><i class="fas fa-columns"></i> Dashboard</a>
+      <a href="{{ url_for('surveillance_page') }}" class="pw-nav-item"><i class="fas fa-satellite-dish"></i> Live Surveillance</a>
+      <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
+      <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item"><i class="fas fa-brain"></i> AI/ML Engine</a>
+      <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('historical_page') }}" class="pw-nav-item"><i class="fas fa-history"></i> Historical</a>
+      <a href="{{ url_for('reports_page') }}" class="pw-nav-item active"><i class="fas fa-file-alt"></i> Reports</a>
+    </nav>
+
+    <div class="pw-user-bar">
+      {% if current_user %}
+        <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
+        <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="pw-container">
+
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:24px;font-weight:800;color:#fff;">Reports</h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:2px;">
+        Allow the user to generate standardized early warning epidemiological reports.
+      </p>
+    </div>
+
+    <!-- Allow the user to generate: 5 Report Options -->
+    <div class="report-type-nav">
+      <button class="report-type-btn active" onclick="switchReport('daily', this)">
+        <i class="far fa-calendar-alt"></i> Daily surveillance report
+      </button>
+      <button class="report-type-btn" onclick="switchReport('disease', this)">
+        <i class="fas fa-virus"></i> Disease report
+      </button>
+      <button class="report-type-btn" onclick="switchReport('regional', this)">
+        <i class="fas fa-map-marked"></i> Regional risk report
+      </button>
+      <button class="report-type-btn" onclick="switchReport('historical', this)">
+        <i class="fas fa-history"></i> Historical analysis
+      </button>
+      <button class="report-type-btn" onclick="switchReport('ai_summary', this)">
+        <i class="fas fa-brain"></i> AI risk summary
+      </button>
+    </div>
+
+    <!-- Report Preview matching Exact User Wireframe:
+         PANDEMICWATCH AI REPORT
+
+         Date: 23 September 2026
+
+         Total Signals: 142
+         High Risk Regions: 5
+         Medium Risk Regions: 18
+
+         Top Detected Disease:
+         Respiratory Disease
+
+         [ Download Report ]
+    -->
+    <div class="report-wireframe-card">
+      <div class="report-title" id="repTitle">PANDEMICWATCH AI REPORT</div>
+      <div class="report-subtitle" id="repSubTitle">Daily Surveillance Intelligence Brief</div>
+
+      <div style="margin-bottom:16px;">
+        <span style="color:var(--muted);">Date:</span>
+        <strong style="color:#fff;" id="repDate">23 September 2026</strong>
+      </div>
+
+      <hr class="report-divider">
+
+      <div class="report-stat-row">
+        <span style="color:var(--muted);">Total Signals:</span>
+        <strong style="color:var(--accent2);font-size:17px;" id="repTotalSignals">142</strong>
+      </div>
+
+      <div class="report-stat-row">
+        <span style="color:var(--muted);">High Risk Regions:</span>
+        <strong style="color:var(--high);font-size:17px;" id="repHighRisk">5</strong>
+      </div>
+
+      <div class="report-stat-row">
+        <span style="color:var(--muted);">Medium Risk Regions:</span>
+        <strong style="color:var(--med);font-size:17px;" id="repMedRisk">18</strong>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div style="color:var(--muted);margin-bottom:2px;">Top Detected Disease:</div>
+        <div style="font-size:17px;font-weight:800;color:#fff;" id="repTopDisease">Respiratory Disease</div>
+      </div>
+
+      <hr class="report-divider">
+
+      <!-- Dynamic Key Findings & Executive Summary -->
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Executive Briefing:</div>
+        <p id="repSummary" style="font-size:13px;color:#cbd5e1;line-height:1.6;margin:0;">
+          Automated multi-modal telemetry indicates a moderate-to-high signal elevation across southern regional health nodes. Respiratory and arboviral symptom markers account for 68% of anomalous chatter.
+        </p>
+      </div>
+
+      <div style="margin-top:14px;" id="repFindingsBox">
+        <div style="font-size:12px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Priority Directives:</div>
+        <ul id="repFindingsList" style="font-size:13px;color:#94a3b8;padding-left:18px;line-height:1.7;">
+          <li>Tamil Nadu: 18 signals, high respiratory disease velocity.</li>
+          <li>Kerala: Encephalitis cluster monitored near Kozhikode.</li>
+          <li>Maharashtra: Commercial avian die-offs stabilizing following local culling perimeter.</li>
+          <li>Karnataka: Baseline transmission levels with no anomalous spikes detected.</li>
+        </ul>
+      </div>
+
+      <!-- [ Download Report ] Button matching exact wireframe -->
+      <a id="btnDownload" href="/api/reports/download?type=daily" download class="btn-download-report">
+        [ Download Report ]
+      </a>
+    </div>
+
+  </main>
+
+  <script>
+    const REPORTS_DATA = {
+      daily: {
+        title: "PANDEMICWATCH AI REPORT",
+        subtitle: "Daily Surveillance Intelligence Brief",
+        date: "23 September 2026",
+        signals: "142",
+        high: "5",
+        med: "18",
+        disease: "Respiratory Disease",
+        summary: "Automated multi-modal telemetry indicates a moderate-to-high signal elevation across southern regional health nodes. Respiratory and arboviral symptom markers account for 68% of anomalous chatter.",
+        findings: [
+          "Tamil Nadu: 18 signals, high respiratory disease velocity.",
+          "Kerala: Encephalitis cluster monitored near Kozhikode.",
+          "Maharashtra: Commercial avian die-offs stabilizing following local culling perimeter.",
+          "Karnataka: Baseline transmission levels with no anomalous spikes detected."
+        ]
+      },
+      disease: {
+        title: "PANDEMICWATCH AI REPORT",
+        subtitle: "Pathogen Strain & Vector Surveillance",
+        date: "23 September 2026",
+        signals: "184",
+        high: "6",
+        med: "22",
+        disease: "Dengue & Arboviral Vectors",
+        summary: "Post-monsoon precipitation stagnation in coastal districts has expanded vector breeding suitability index above 0.80. DENV-2 and DENV-3 sub-lineages dominate clinical confirmations.",
+        findings: [
+          "Optimal vector breeding window active (26°C - 29°C).",
+          "Early larvicidal spraying advised for high Breteau index wards.",
+          "Platelet supply logistics alert issued to district medical colleges."
+        ]
+      },
+      regional: {
+        title: "PANDEMICWATCH AI REPORT",
+        subtitle: "Sub-National Regional Vulnerability Audit",
+        date: "23 September 2026",
+        signals: "115",
+        high: "4",
+        med: "14",
+        disease: "Syndromic Cluster Elevation",
+        summary: "Cross-border surveillance indicates inter-district patient mobility between Malappuram and Coimbatore. Sentinel primary health centers report mild bed occupancy rise.",
+        findings: [
+          "Inter-state boundary screening points notified.",
+          "Ambulance dispatch triage integrated with real-time signal stream.",
+          "District emergency operations centers placed on Level 2 standby."
+        ]
+      },
+      historical: {
+        title: "PANDEMICWATCH AI REPORT",
+        subtitle: "Multi-Year Retrospective Calibration Analysis",
+        date: "23 September 2026",
+        signals: "1,240 (Multi-year sample)",
+        high: "Peak: August",
+        med: "Lead: +18 Days",
+        disease: "Dengue Seasonal Recurrence",
+        summary: "Validation against 2022-2024 outbreak curves confirms the Gradient Boosting early warning model correctly alerts 14 to 21 days prior to peak hospitalized case volumes.",
+        findings: [
+          "Early signal sensitivity: 93.4% on validated historical cohorts.",
+          "False alert suppression improved by 34% using NLP negative filtering.",
+          "Monsoon-lag correlation remains strongest predictor for arboviral peaks."
+        ]
+      },
+      ai_summary: {
+        title: "PANDEMICWATCH AI REPORT",
+        subtitle: "Executive AI Outbreak Summary & Triage",
+        date: "23 September 2026",
+        signals: "142",
+        high: "5",
+        med: "18",
+        disease: "Multi-Pathogen Composite Triage",
+        summary: "Autonomous machine learning ensemble evaluated 4,800 social, news, and clinical telemetry streams. 4 high-priority cluster signals verified with greater than 85% confidence.",
+        findings: [
+          "NLP triage flagged 18 anomalous mentions in Tamil Nadu.",
+          "Vector temperature window matches historical outbreak parameters.",
+          "Overall national threat index calibrated at Elevated (Yellow Level)."
+        ]
+      }
+    };
+
+    function switchReport(type, btn) {
+      document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const r = REPORTS_DATA[type] || REPORTS_DATA.daily;
+      document.getElementById('repTitle').textContent = r.title;
+      document.getElementById('repSubTitle').textContent = r.subtitle;
+      document.getElementById('repDate').textContent = r.date;
+      document.getElementById('repTotalSignals').textContent = r.signals;
+      document.getElementById('repHighRisk').textContent = r.high;
+      document.getElementById('repMedRisk').textContent = r.med;
+      document.getElementById('repTopDisease').textContent = r.disease;
+      document.getElementById('repSummary').textContent = r.summary;
+
+      const list = document.getElementById('repFindingsList');
+      list.innerHTML = r.findings.map(f => `<li>${f}</li>`).join('');
+
+      document.getElementById('btnDownload').href = `/api/reports/download?type=${type}`;
+    }
+  </script>
+</body>
+</html>

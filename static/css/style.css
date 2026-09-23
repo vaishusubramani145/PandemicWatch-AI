@@ -1,0 +1,224 @@
+/* PandemicWatch-AI Unified Stylesheet */
+:root {
+  --bg: #06080f;
+  --card: #121624;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #eef2fa;
+  --muted: #8a93a8;
+  --accent: #3ee2c0;
+  --accent2: #7aa6ff;
+  --high: #ff5c7c;
+  --med: #facc15;
+  --low: #4ade80;
+  --grad: linear-gradient(135deg, #3ee2c0, #7aa6ff 60%, #b56bff);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+a { color: inherit; text-decoration: none; }
+
+/* Top Navbar */
+.pw-navbar {
+  background: #0d111d;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.pw-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+.pw-logo .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.pw-nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pw-nav-item {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.pw-nav-item:hover, .pw-nav-item.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+.pw-nav-item.active {
+  color: var(--accent);
+  border: 1px solid rgba(62, 226, 192, 0.3);
+}
+
+/* User Profile Badge */
+.pw-user-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+}
+.pw-role-tag {
+  background: rgba(122, 166, 255, 0.15);
+  color: var(--accent2);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.pw-btn-logout {
+  color: #ff859d;
+  border: 1px solid rgba(255, 92, 124, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Container */
+.pw-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* KPI Banner */
+.pw-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.pw-kpi-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  text-align: center;
+}
+.pw-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.pw-kpi-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+/* Card */
+.pw-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.pw-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.pw-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Status Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-high { background: rgba(255, 92, 124, 0.15); color: var(--high); border: 1px solid rgba(255, 92, 124, 0.3); }
+.status-med { background: rgba(250, 204, 21, 0.15); color: var(--med); border: 1px solid rgba(250, 204, 21, 0.3); }
+.status-low, .status-normal { background: rgba(74, 222, 128, 0.15); color: var(--low); border: 1px solid rgba(74, 222, 128, 0.3); }
+
+/* Buttons */
+.btn-pw {
+  background: var(--grad);
+  color: #06121a;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.btn-pw:hover { transform: translateY(-1px); }
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn-outline:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* Map container */
+#map {
+  height: 520px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* Table */
+.pw-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.pw-table th {
+  text-align: left;
+  padding: 12px 14px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pw-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.pw-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}

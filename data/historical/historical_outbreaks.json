@@ -1,0 +1,92 @@
+{
+  "outbreaks": [
+    {
+      "disease": "dengue",
+      "disease_label": "Dengue",
+      "year": "2024",
+      "peak_month": "August",
+      "affected_regions": ["Tamil Nadu", "Kerala", "Karnataka"],
+      "monthly_signals": [
+        {"month": "Jan", "signals": 14},
+        {"month": "Feb", "signals": 19},
+        {"month": "Mar", "signals": 28},
+        {"month": "Apr", "signals": 45},
+        {"month": "May", "signals": 72},
+        {"month": "Jun", "signals": 98},
+        {"month": "Jul", "signals": 140},
+        {"month": "Aug", "signals": 185},
+        {"month": "Sep", "signals": 160},
+        {"month": "Oct", "signals": 115},
+        {"month": "Nov", "signals": 64},
+        {"month": "Dec", "signals": 32}
+      ],
+      "description": "Multi-district surge following anomalous monsoon precipitation stagnation. Peak signal detected in August with 185 correlated clinical and syndromic indicators."
+    },
+    {
+      "disease": "nipah",
+      "disease_label": "Nipah Virus",
+      "year": "2022",
+      "peak_month": "September",
+      "affected_regions": ["Kerala (Kozhikode)", "Malappuram", "Wayanad"],
+      "monthly_signals": [
+        {"month": "Jan", "signals": 0},
+        {"month": "Feb", "signals": 0},
+        {"month": "Mar", "signals": 1},
+        {"month": "Apr", "signals": 0},
+        {"month": "May", "signals": 2},
+        {"month": "Jun", "signals": 1},
+        {"month": "Jul", "signals": 3},
+        {"month": "Aug", "signals": 8},
+        {"month": "Sep", "signals": 42},
+        {"month": "Oct", "signals": 14},
+        {"month": "Nov", "signals": 3},
+        {"month": "Dec", "signals": 0}
+      ],
+      "description": "Zoonotic spillover event from fruit bat reservoirs. Model achieved 11 days of early lead-time prior to state emergency confirmation."
+    },
+    {
+      "disease": "h5n1",
+      "disease_label": "Avian Influenza H5N1",
+      "year": "2024",
+      "peak_month": "February",
+      "affected_regions": ["Maharashtra (Nagpur)", "Andhra Pradesh", "Odisha"],
+      "monthly_signals": [
+        {"month": "Jan", "signals": 12},
+        {"month": "Feb", "signals": 88},
+        {"month": "Mar", "signals": 45},
+        {"month": "Apr", "signals": 20},
+        {"month": "May", "signals": 8},
+        {"month": "Jun", "signals": 5},
+        {"month": "Jul", "signals": 3},
+        {"month": "Aug", "signals": 11},
+        {"month": "Sep", "signals": 24},
+        {"month": "Oct", "signals": 18},
+        {"month": "Nov", "signals": 12},
+        {"month": "Dec", "signals": 15}
+      ],
+      "description": "Commercial poultry die-offs detected along Central Asian Flyway. Fusion pipeline generated medium risk advisory 9 days prior to official cull declaration."
+    },
+    {
+      "disease": "covid",
+      "disease_label": "COVID-19 / SARS-CoV-2",
+      "year": "2020",
+      "peak_month": "September",
+      "affected_regions": ["Maharashtra", "Delhi", "Tamil Nadu"],
+      "monthly_signals": [
+        {"month": "Jan", "signals": 5},
+        {"month": "Feb", "signals": 18},
+        {"month": "Mar", "signals": 85},
+        {"month": "Apr", "signals": 140},
+        {"month": "May", "signals": 195},
+        {"month": "Jun", "signals": 250},
+        {"month": "Jul", "signals": 310},
+        {"month": "Aug", "signals": 380},
+        {"month": "Sep", "signals": 450},
+        {"month": "Oct", "signals": 320},
+        {"month": "Nov", "signals": 240},
+        {"month": "Dec", "signals": 180}
+      ],
+      "description": "Nationwide aerosol transmission velocity. Multi-modal signal analysis captured exponential doubling trends across metropolitan centers."
+    }
+  ]
+}

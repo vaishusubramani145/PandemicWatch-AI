@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PandemicWatch AI &mdash; Live Surveillance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* Exact User Wireframe Card Styling */
+    .wireframe-search-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .wireframe-search-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #fff;
+      font-size: 15px;
+    }
+    .wireframe-search-input {
+      flex: 1;
+      min-width: 260px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 14px;
+      outline: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .wireframe-search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(62, 226, 192, 0.2);
+    }
+    .ascii-signal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    /* Rendered to reflect:
+       ┌────────────────────────────────────────────┐
+       │ Disease: Respiratory Infection             │
+       │ Location: Tamil Nadu                       │
+       │ Signal: Increased reports                  │
+       │ Source: Public News                        │
+       │ Date: 23 Sep 2026                          │
+       │ Status: ⚠ Potential Signal                 │
+       └────────────────────────────────────────────┘
+    */
+    .ascii-box {
+      background: #0b0f19;
+      border: 1.5px solid #2a354d;
+      border-radius: 8px;
+      padding: 18px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      color: #e2e8f0;
+      line-height: 1.7;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ascii-box:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+    .ascii-row {
+      display: flex;
+      margin-bottom: 4px;
+    }
+    .ascii-key {
+      color: var(--muted);
+      width: 100px;
+      flex-shrink: 0;
+    }
+    .ascii-val {
+      color: #fff;
+      font-weight: 600;
+    }
+    .ascii-status-val {
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar matching user wireframe -->
+  <header class="pw-navbar">
+    <div class="pw-logo">
+      <span class="dot"></span>
+      PandemicWatch AI
+    </div>
+
+    <nav class="pw-nav-links">
+      <a href="{{ url_for('dashboard') }}" class="pw-nav-item"><i class="fas fa-columns"></i> Dashboard</a>
+      <a href="{{ url_for('surveillance_page') }}" class="pw-nav-item active"><i class="fas fa-satellite-dish"></i> Live Surveillance</a>
+      <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
+      <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item"><i class="fas fa-brain"></i> AI/ML Engine</a>
+      <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('historical_page') }}" class="pw-nav-item"><i class="fas fa-history"></i> Historical</a>
+      <a href="{{ url_for('reports_page') }}" class="pw-nav-item"><i class="fas fa-file-alt"></i> Reports</a>
+    </nav>
+
+    <div class="pw-user-bar">
+      {% if current_user %}
+        <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
+        <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="pw-container">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div>
+        <h1 style="font-size:24px;font-weight:800;color:#fff;">Live Surveillance</h1>
+        <p style="color:var(--muted);font-size:13px;margin-top:2px;">
+          Autonomous ingestion from ProMED-mail, WHO DON, sentinel clinics, local regional press & digital media feeds.
+        </p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-outline" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Refresh Feed</button>
+      </div>
+    </div>
+
+    <!-- User Wireframe Search: Search: [ Disease / Location ] -->
+    <div class="wireframe-search-box">
+      <span class="wireframe-search-label">Search:</span>
+      <input 
+        type="text" 
+        id="surveillanceSearchInput" 
+        class="wireframe-search-input" 
+        placeholder="[ Disease / Location ]"
+        value="{{ query or '' }}"
+        onkeyup="filterLiveSignals()"
+      >
+      <div style="display:flex;gap:8px;">
+        <button class="btn-pw" onclick="filterLiveSignals()"><i class="fas fa-search"></i> Search</button>
+        <button class="btn-outline" onclick="clearSearch()"><i class="fas fa-times"></i> Clear</button>
+      </div>
+    </div>
+
+    <!-- Live Signals Grid rendered matching exact user ASCII box -->
+    <div class="ascii-signal-grid" id="signalsGrid">
+      {% for item in signals %}
+      <div class="ascii-box signal-card-item" data-disease="{{ item.disease | lower }}" data-location="{{ item.location | lower }}" data-signal="{{ item.signal | lower }}">
+        <div class="ascii-row">
+          <span class="ascii-key">Disease:</span>
+          <span class="ascii-val">{{ item.disease }}</span>
+        </div>
+        <div class="ascii-row">
+          <span class="ascii-key">Location:</span>
+          <span class="ascii-val" style="color:var(--accent);">{{ item.location }}</span>
+        </div>
+        <div class="ascii-row">
+          <span class="ascii-key">Signal:</span>
+          <span class="ascii-val">{{ item.signal }}</span>
+        </div>
+        <div class="ascii-row">
+          <span class="ascii-key">Source:</span>
+          <span class="ascii-val" style="color:var(--accent2);">{{ item.source }}</span>
+        </div>
+        <div class="ascii-row">
+          <span class="ascii-key">Date:</span>
+          <span class="ascii-val">{{ item.date }}</span>
+        </div>
+        <div class="ascii-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.1);">
+          <span class="ascii-key">Status:</span>
+          <span class="ascii-status-val" style="{% if '⚠' in item.status %}color:var(--med);{% elif '🚨' in item.status %}color:var(--high);{% else %}color:var(--low);{% endif %}">
+            {{ item.status }}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </main>
+
+  <script>
+    function filterLiveSignals() {
+      const q = document.getElementById('surveillanceSearchInput').value.trim().toLowerCase();
+      const cards = document.querySelectorAll('.signal-card-item');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const disease = card.getAttribute('data-disease') || '';
+        const location = card.getAttribute('data-location') || '';
+        const signal = card.getAttribute('data-signal') || '';
+
+        if (!q || disease.includes(q) || location.includes(q) || signal.includes(q)) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function clearSearch() {
+      document.getElementById('surveillanceSearchInput').value = '';
+      filterLiveSignals();
+    }
+  </script>
+</body>
+</html>

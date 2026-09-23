@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PandemicWatch AI &mdash; User Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Topbar matching user wireframe -->
+  <header class="pw-navbar">
+    <div class="pw-logo">
+      <span class="dot"></span>
+      PandemicWatch AI
+    </div>
+
+    <nav class="pw-nav-links">
+      <a href="{{ url_for('dashboard') }}" class="pw-nav-item"><i class="fas fa-columns"></i> Dashboard</a>
+      <a href="{{ url_for('surveillance_page') }}" class="pw-nav-item"><i class="fas fa-satellite-dish"></i> Live Surveillance</a>
+      <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
+      <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item"><i class="fas fa-brain"></i> AI/ML Engine</a>
+      <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('historical_page') }}" class="pw-nav-item"><i class="fas fa-history"></i> Historical</a>
+      <a href="{{ url_for('reports_page') }}" class="pw-nav-item"><i class="fas fa-file-alt"></i> Reports</a>
+    </nav>
+
+    <div class="pw-user-bar">
+      {% if current_user %}
+        <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
+        <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="pw-container">
+
+    <div style="max-width:800px;margin:0 auto;">
+
+      <div class="pw-card" style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px;">
+          <div style="width:72px;height:72px;border-radius:50%;background:rgba(62,226,192,0.15);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--accent);">
+            👤
+          </div>
+          <div>
+            <h1 style="font-size:24px;font-weight:800;color:#fff;margin:0;">{{ current_user.name if current_user else 'Guest Analyst' }}</h1>
+            <div style="color:var(--muted);font-size:14px;margin-top:4px;">{{ current_user.email if current_user else 'guest@pandemicwatch.in' }}</div>
+            <div style="margin-top:6px;">
+              <span class="pw-role-tag">{{ current_user.role if current_user else 'Observational Tier' }}</span>
+              <span style="font-size:12px;color:var(--muted);margin-left:10px;">{{ current_user.organization if current_user else 'National Surveillance Network' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;background:rgba(0,0,0,0.3);border-radius:10px;padding:18px;">
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Surveillance Jurisdiction:</div>
+            <div style="font-size:15px;font-weight:700;color:#fff;margin-top:4px;">Southern Zonal Command (TN, KL, KA)</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Active Sentinel Node:</div>
+            <div style="font-size:15px;font-weight:700;color:var(--accent);margin-top:4px;font-family:'JetBrains Mono',monospace;">NODE-IN-IDSP-402</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Access Clearance:</div>
+            <div style="font-size:15px;font-weight:700;color:#4ade80;margin-top:4px;">Level 3 (Real-Time Ingestion)</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Platform Mode:</div>
+            <div style="font-size:15px;font-weight:700;color:#fff;margin-top:4px;">Production / Early Warning</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Demo Switcher for project defense / viva / testing -->
+      <div class="pw-card">
+        <h3 class="pw-card-title" style="margin-bottom:12px;"><i class="fas fa-user-friends" style="color:var(--accent2);margin-right:8px;"></i> Pre-Seeded Officer Credentials</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">
+          Use these pre-configured operational personas to demonstrate role-based access control and regional alerts:
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px;">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:14px;">
+            <div style="font-weight:700;color:#fff;font-size:14px;">Dr. A. Varma</div>
+            <div style="font-size:12px;color:var(--accent2);">District Health Officer</div>
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--muted);margin-top:6px;">officer@pandemicwatch.in</div>
+            <div style="font-size:11px;color:var(--muted);">Password: officer123</div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:14px;">
+            <div style="font-weight:700;color:#fff;font-size:14px;">Priya Sharma</div>
+            <div style="font-size:12px;color:var(--accent);">Surveillance Analyst</div>
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--muted);margin-top:6px;">analyst@pandemicwatch.in</div>
+            <div style="font-size:11px;color:var(--muted);">Password: analyst123</div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:14px;">
+            <div style="font-weight:700;color:#fff;font-size:14px;">Dr. Rajesh Kumar</div>
+            <div style="font-size:12px;color:#b56bff;">Senior Epidemiologist</div>
+            <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--muted);margin-top:6px;">researcher@pandemicwatch.in</div>
+            <div style="font-size:11px;color:var(--muted);">Password: research123</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;text-align:right;">
+          <a href="{{ url_for('logout') }}" class="btn-outline" style="color:var(--high);border-color:rgba(255,92,124,0.3);">
+            <i class="fas fa-sign-out-alt"></i> Logout from Current Session
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

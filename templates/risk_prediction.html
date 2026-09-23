@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PandemicWatch AI &mdash; AI/ML Risk Prediction Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* User Wireframe Pipeline Flow Styling */
+    .pipeline-ascii-card {
+      background: #090d16;
+      border: 1.5px solid #2a354d;
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
+      text-align: center;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    .flow-node {
+      display: inline-block;
+      background: rgba(18, 22, 36, 0.9);
+      border: 1px solid var(--border);
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .flow-plus {
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 18px;
+      margin: 8px 0;
+    }
+    .flow-arrow {
+      color: var(--accent2);
+      font-weight: 900;
+      font-size: 22px;
+      margin: 10px 0;
+    }
+    .slider-group {
+      margin-bottom: 16px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .sim-slider {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar matching user wireframe -->
+  <header class="pw-navbar">
+    <div class="pw-logo">
+      <span class="dot"></span>
+      PandemicWatch AI
+    </div>
+
+    <nav class="pw-nav-links">
+      <a href="{{ url_for('dashboard') }}" class="pw-nav-item"><i class="fas fa-columns"></i> Dashboard</a>
+      <a href="{{ url_for('surveillance_page') }}" class="pw-nav-item"><i class="fas fa-satellite-dish"></i> Live Surveillance</a>
+      <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
+      <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item active"><i class="fas fa-brain"></i> AI/ML Engine</a>
+      <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('historical_page') }}" class="pw-nav-item"><i class="fas fa-history"></i> Historical</a>
+      <a href="{{ url_for('reports_page') }}" class="pw-nav-item"><i class="fas fa-file-alt"></i> Reports</a>
+    </nav>
+
+    <div class="pw-user-bar">
+      {% if current_user %}
+        <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
+        <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="pw-container">
+
+    <div style="margin-bottom:20px;">
+      <h1 style="font-size:24px;font-weight:800;color:#fff;">AI/ML Risk Prediction Engine</h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:2px;">
+        Multi-modal feature fusion and non-linear gradient-boosted regression for real-time epidemic score calculation.
+      </p>
+    </div>
+
+    <!-- Pipeline Architecture Diagram & Live Simulator Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+
+      <!-- Left Column: The Exact Architecture Specified By User -->
+      <div class="pw-card">
+        <div class="pw-card-header">
+          <h3 class="pw-card-title"><i class="fas fa-sitemap" style="color:var(--accent);margin-right:8px;"></i> Model Pipeline Architecture</h3>
+          <span class="status-pill status-normal">LIVE INFERENCE</span>
+        </div>
+
+        <div class="pipeline-ascii-card">
+          <div class="flow-node" style="border-color:#7aa6ff;color:#7aa6ff;">
+            <i class="far fa-newspaper"></i> News signals
+          </div>
+          <div class="flow-plus">+</div>
+          <div class="flow-node" style="border-color:#ff5c7c;color:#ff5c7c;">
+            <i class="fas fa-vial"></i> Disease signals
+          </div>
+          <div class="flow-plus">+</div>
+          <div class="flow-node" style="border-color:#4ade80;color:#4ade80;">
+            <i class="fas fa-cloud-sun-rain"></i> Environmental data
+          </div>
+          <div class="flow-plus">+</div>
+          <div class="flow-node" style="border-color:#facc15;color:#facc15;">
+            <i class="fas fa-search"></i> Search trends
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" style="background:#1a233a;border-color:var(--accent2);width:80%;">
+            ⚙ Feature Processing
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" style="background:#201833;border-color:#b56bff;width:80%;">
+            🤖 ML Model (GradientBoosting)
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" style="background:rgba(255,92,124,0.15);border:2px solid var(--high);color:#ff5c7c;font-size:18px;width:80%;">
+            🎯 Risk Score
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Pipeline Simulator -->
+      <div class="pw-card">
+        <div class="pw-card-header">
+          <h3 class="pw-card-title"><i class="fas fa-sliders-h" style="color:var(--accent2);margin-right:8px;"></i> Interactive Multi-Modal Inputs</h3>
+          <button class="btn-outline" onclick="loadTamilNaduPreset()" style="font-size:11px;padding:4px 8px;">Preset: Tamil Nadu</button>
+        </div>
+
+        <form id="riskPredictorForm" onsubmit="executePipeline(event)">
+          <div class="slider-group">
+            <label style="font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:600;display:block;margin-bottom:6px;">Target Region & Disease</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <select id="simRegion" class="custom-select" style="width:100%;padding:8px 12px;font-size:13px;">
+                <option value="Tamil Nadu" selected>Tamil Nadu</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Delhi">Delhi</option>
+              </select>
+              <select id="simDisease" class="custom-select" style="width:100%;padding:8px 12px;font-size:13px;">
+                <option value="Respiratory illness" selected>Respiratory illness</option>
+                <option value="Dengue">Dengue</option>
+                <option value="Nipah Virus">Nipah Virus</option>
+                <option value="Avian Influenza">Avian Influenza</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- News signals -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span><i class="far fa-newspaper" style="color:#7aa6ff;"></i> News Signals (Mentions count)</span>
+              <strong id="valNews">18</strong>
+            </div>
+            <input type="range" id="inputNews" class="sim-slider" min="0" max="60" value="18" oninput="updateVal('News')">
+          </div>
+
+          <!-- Disease signals -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span><i class="fas fa-vial" style="color:#ff5c7c;"></i> Disease Signals (Clinical lab alerts)</span>
+              <strong id="valDisease">24</strong>
+            </div>
+            <input type="range" id="inputDisease" class="sim-slider" min="0" max="80" value="24" oninput="updateVal('Disease')">
+          </div>
+
+          <!-- Environmental data: Temp + Humidity -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span><i class="fas fa-thermometer-half" style="color:#4ade80;"></i> Temperature (°C)</span>
+              <strong id="valTemp">28.4°C</strong>
+            </div>
+            <input type="range" id="inputTemp" class="sim-slider" min="15" max="42" step="0.5" value="28.5" oninput="updateVal('Temp', '°C')">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span><i class="fas fa-tint" style="color:#4ade80;"></i> Relative Humidity (%)</span>
+              <strong id="valHumidity">78%</strong>
+            </div>
+            <input type="range" id="inputHumidity" class="sim-slider" min="20" max="100" value="78" oninput="updateVal('Humidity', '%')">
+          </div>
+
+          <!-- Search trends -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span><i class="fas fa-chart-line" style="color:#facc15;"></i> Search Trends (Syndromic query volume)</span>
+              <strong id="valSearch">76%</strong>
+            </div>
+            <input type="range" id="inputSearch" class="sim-slider" min="0" max="100" value="76" oninput="updateVal('Search', '%')">
+          </div>
+
+          <button type="submit" class="btn-pw" style="width:100%;justify-content:center;margin-top:10px;">
+            <i class="fas fa-play"></i> RUN PREDICTION PIPELINE
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Prediction Output Card matching exact user specifications -->
+    <div class="pw-card" id="predictionResultCard" style="border-left:5px solid var(--high);">
+      <div class="pw-card-header">
+        <div>
+          <span style="font-size:11px;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;">Pipeline Output Result</span>
+          <h2 style="font-size:24px;font-weight:800;color:#fff;margin:2px 0 0 0;" id="outRegion">Tamil Nadu</h2>
+        </div>
+        <span class="status-pill status-high" id="outRiskLevelBadge" style="font-size:14px;padding:6px 14px;">
+          Risk Level: <strong id="outRiskLevel">HIGH</strong>
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;background:rgba(0,0,0,0.3);border-radius:10px;padding:18px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Risk Score:</div>
+          <div style="font-size:36px;font-weight:800;color:#ff5c7c;font-family:'JetBrains Mono',monospace;" id="outRiskScore">72</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Detected Signals:</div>
+          <div style="font-size:36px;font-weight:800;color:#7aa6ff;font-family:'JetBrains Mono',monospace;" id="outSignals">18</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Top Disease:</div>
+          <div style="font-size:18px;font-weight:700;color:#fff;margin-top:8px;" id="outTopDisease">Respiratory illness</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Last Updated:</div>
+          <div style="font-size:18px;font-weight:700;color:#fff;margin-top:8px;" id="outLastUpdated">23 Sep 2026</div>
+        </div>
+      </div>
+
+      <!-- AI Explanation -->
+      <div style="background:rgba(62,226,192,0.06);border:1px solid rgba(62,226,192,0.3);border-radius:8px;padding:18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:18px;">🤖</span>
+          <h4 style="font-weight:800;font-size:16px;color:#fff;margin:0;">AI Risk Explanation</h4>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">The system detected:</div>
+        <div style="line-height:2.2;font-size:14px;color:#dce4f2;">
+          <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Increase in disease-related reports</div>
+          <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Multiple reports from the same region</div>
+          <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Increasing symptom mentions</div>
+          <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Environmental changes</div>
+        </div>
+        <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted);">
+          These signals contributed to the current model-generated risk level.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function updateVal(key, unit = '') {
+      const el = document.getElementById('input' + key);
+      const display = document.getElementById('val' + key);
+      display.textContent = el.value + unit;
+    }
+
+    function loadTamilNaduPreset() {
+      document.getElementById('simRegion').value = 'Tamil Nadu';
+      document.getElementById('simDisease').value = 'Respiratory illness';
+      document.getElementById('inputNews').value = 18;
+      updateVal('News');
+      document.getElementById('inputDisease').value = 24;
+      updateVal('Disease');
+      document.getElementById('inputTemp').value = 28.5;
+      updateVal('Temp', '°C');
+      document.getElementById('inputHumidity').value = 78;
+      updateVal('Humidity', '%');
+      document.getElementById('inputSearch').value = 76;
+      updateVal('Search', '%');
+      executePipeline();
+    }
+
+    async function executePipeline(e) {
+      if (e) e.preventDefault();
+
+      const region = document.getElementById('simRegion').value;
+      const disease = document.getElementById('simDisease').value;
+      const news = parseInt(document.getElementById('inputNews').value);
+      const clinical = parseInt(document.getElementById('inputDisease').value);
+      const temp = parseFloat(document.getElementById('inputTemp').value);
+      const humidity = parseFloat(document.getElementById('inputHumidity').value);
+      const search = parseInt(document.getElementById('inputSearch').value);
+
+      try {
+        const res = await fetch('/api/risk-prediction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            region: region,
+            disease: disease,
+            news_mentions: news,
+            clinical_reports: clinical,
+            temperature: temp,
+            humidity: humidity,
+            search_trend: search
+          })
+        });
+        const data = await res.json();
+
+        document.getElementById('outRegion').textContent = data.region;
+        document.getElementById('outRiskScore').textContent = data.risk_score;
+        document.getElementById('outRiskLevel').textContent = data.risk_level;
+        document.getElementById('outSignals').textContent = data.detected_signals;
+        document.getElementById('outTopDisease').textContent = data.top_disease;
+        document.getElementById('outLastUpdated').textContent = data.last_updated;
+
+        const card = document.getElementById('predictionResultCard');
+        const badge = document.getElementById('outRiskLevelBadge');
+        if (data.risk_level === 'HIGH') {
+          card.style.borderLeftColor = 'var(--high)';
+          badge.className = 'status-pill status-high';
+          document.getElementById('outRiskScore').style.color = 'var(--high)';
+        } else if (data.risk_level === 'MEDIUM') {
+          card.style.borderLeftColor = 'var(--med)';
+          badge.className = 'status-pill status-med';
+          document.getElementById('outRiskScore').style.color = 'var(--med)';
+        } else {
+          card.style.borderLeftColor = 'var(--low)';
+          badge.className = 'status-pill status-low';
+          document.getElementById('outRiskScore').style.color = 'var(--low)';
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PANDEMICWATCH AI &mdash; Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .auth-box {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 34px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+    .auth-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .auth-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #cfd6e6;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(10, 14, 26, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .btn-register {
+      width: 100%;
+      background: var(--grad);
+      color: #06121a;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 18px;
+      text-transform: uppercase;
+    }
+    .alert-msg {
+      background: rgba(255, 92, 124, 0.15);
+      border: 1px solid rgba(255, 92, 124, 0.3);
+      color: #ff859d;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-box">
+    <div class="auth-title">PANDEMICWATCH AI</div>
+    <div class="auth-subtitle">New Analyst Registration</div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="alert-msg">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('register') }}" method="POST">
+      <div class="form-group">
+        <label class="form-label" for="name">Full Name</label>
+        <input type="text" id="name" name="name" class="form-input" placeholder="Dr. Sunita Rao" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Institutional Email</label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="s.rao@health.gov.in" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="role">Role</label>
+        <select id="role" name="role" class="form-input" style="color:#fff;">
+          <option value="District Health Officer">District Health Officer</option>
+          <option value="Surveillance Analyst" selected>Surveillance Analyst</option>
+          <option value="Senior Epidemiologist">Senior Epidemiologist</option>
+          <option value="Public Health Researcher">Public Health Researcher</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="organization">Organization</label>
+        <input type="text" id="organization" name="organization" class="form-input" placeholder="State Health Mission" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password (min 6 chars)</label>
+        <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" minlength="6" required>
+      </div>
+
+      <button type="submit" class="btn-register">[ &nbsp; REGISTER ACCOUNT &nbsp; ]</button>
+    </form>
+
+    <div style="margin-top: 20px; font-size: 12px; color: var(--muted); text-align: center;">
+      Already registered? <a href="{{ url_for('login') }}" style="color:var(--accent);">Sign In here</a>
+    </div>
+  </div>
+
+</body>
+</html>
