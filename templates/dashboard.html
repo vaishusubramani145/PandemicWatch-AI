@@ -32,11 +32,16 @@
 
     <!-- User Profile & Logout -->
     <div class="pw-user-bar">
+      <!-- Theme Switcher Button -->
+      <button class="theme-toggle-btn" id="globalThemeBtn" onclick="toggleTheme()" title="Switch Light/Dark Theme">
+        <i class="fas fa-sun" style="color:#d97706;"></i> <span>Light Mode</span>
+      </button>
+
       {% if current_user %}
         <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
         <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
       {% else %}
-        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('login') }}" style="color:var(--accent);font-weight:600;">👤 Login</a>
         <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
       {% endif %}
     </div>
@@ -70,16 +75,29 @@
       <!-- INDIA RISK MAP -->
       <div class="pw-card" style="padding:18px;">
         <div style="text-align:center;margin-bottom:12px;">
-          <h3 style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;letter-spacing:0.15em;color:#fff;margin:0;">
+          <h3 style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;letter-spacing:0.15em;color:var(--text-heading);margin:0;">
             INDIA RISK MAP
           </h3>
           <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:13px;font-weight:600;">
-            <span style="color:#4ade80;">🟢 Low Risk</span>
-            <span style="color:#facc15;">🟡 Medium Risk</span>
-            <span style="color:#ff5c7c;">🔴 High Risk</span>
+            <span style="color:#16a34a;">🟢 Low Risk</span>
+            <span style="color:#d97706;">🟡 Medium Risk</span>
+            <span style="color:#ef4444;">🔴 High Risk</span>
           </div>
         </div>
-        <div id="map" style="height:480px;border-radius:10px;"></div>
+
+        <!-- Google Maps Toolbar -->
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="btn-outline" style="padding:4px 10px;font-size:11.5px;color:var(--accent);border-color:rgba(13,148,136,0.3);font-weight:600;" onclick="activateGoogleMaps()"><i class="fab fa-google" style="color:#4285F4;"></i> Google Maps</button>
+            <button class="btn-outline" style="padding:4px 10px;font-size:11.5px;" onclick="initCleanMap('map')"><i class="fas fa-layer-group"></i> Standard</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="text" id="dashGmapsKey" placeholder="Google Maps Key (Optional)" style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:11px;color:var(--text);font-family:'JetBrains Mono',monospace;width:170px;" />
+            <button class="btn-pw" style="padding:4px 10px;font-size:11px;" onclick="saveDashKey()"><i class="fas fa-check"></i> Apply</button>
+          </div>
+        </div>
+
+        <div id="map" style="height:460px;border-radius:10px;"></div>
       </div>
 
       <!-- Region Risk & AI Explanation Cards -->
@@ -88,47 +106,47 @@
         <div class="pw-card" style="border-left:4px solid var(--high);margin-bottom:16px;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
             <div>
-              <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;">Selected Region</div>
-              <h2 style="font-size:22px;font-weight:800;color:#fff;margin:2px 0 0 0;" id="rrRegionName">Tamil Nadu</h2>
+              <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;font-weight:600;">Selected Region</div>
+              <h2 style="font-size:22px;font-weight:800;color:var(--text-heading);margin:2px 0 0 0;" id="rrRegionName">Tamil Nadu</h2>
             </div>
             <span class="status-pill status-high" id="rrRiskBadge" style="font-size:13px;">
               Risk Level: <strong id="rrRiskLevel" style="margin-left:4px;">HIGH</strong>
             </span>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;background:rgba(0,0,0,0.3);border-radius:8px;padding:14px;margin-bottom:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;">
             <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Risk Score:</div>
-              <div style="font-size:32px;font-weight:800;color:#ff5c7c;font-family:'JetBrains Mono',monospace;" id="rrRiskScore">72</div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;">Risk Score:</div>
+              <div style="font-size:32px;font-weight:800;color:#ef4444;font-family:'JetBrains Mono',monospace;" id="rrRiskScore">72</div>
             </div>
             <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Detected Signals:</div>
-              <div style="font-size:32px;font-weight:800;color:#7aa6ff;font-family:'JetBrains Mono',monospace;" id="rrDetectedSignals">18</div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;">Detected Signals:</div>
+              <div style="font-size:32px;font-weight:800;color:#2563eb;font-family:'JetBrains Mono',monospace;" id="rrDetectedSignals">18</div>
             </div>
           </div>
 
           <div style="margin-bottom:12px;">
-            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Top Disease:</div>
-            <div style="font-size:16px;font-weight:700;color:#fff;" id="rrTopDisease">Respiratory illness</div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;">Top Disease:</div>
+            <div style="font-size:16px;font-weight:700;color:var(--text-heading);" id="rrTopDisease">Respiratory illness</div>
           </div>
 
           <div style="font-size:12px;color:var(--muted);">
-            Last Updated: <strong style="color:#fff;" id="rrLastUpdated">23 Sep 2026</strong>
+            Last Updated: <strong style="color:var(--text-heading);" id="rrLastUpdated">23 Sep 2026</strong>
           </div>
         </div>
 
         <!-- 🤖 AI Risk Explanation: Exact User Wireframe -->
-        <div class="pw-card" style="border:1px solid rgba(62,226,192,0.3);border-left:4px solid var(--accent);">
+        <div class="pw-card" style="border:1px solid var(--border);border-left:4px solid var(--accent);">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <span style="font-size:18px;">🤖</span>
-            <h4 style="font-weight:700;font-size:16px;color:#fff;margin:0;">AI Risk Explanation</h4>
+            <h4 style="font-weight:700;font-size:16px;color:var(--text-heading);margin:0;">AI Risk Explanation</h4>
           </div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">The system detected:</div>
-          <div style="line-height:2;font-size:13.5px;color:#dce4f2;" id="rrExplanationList">
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Increase in disease-related reports</div>
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Multiple reports from the same region</div>
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Increasing symptom mentions</div>
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Environmental changes</div>
+          <div style="line-height:2;font-size:13.5px;color:#334155;" id="rrExplanationList">
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Increase in disease-related reports</div>
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Multiple reports from the same region</div>
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Increasing symptom mentions</div>
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Environmental changes</div>
           </div>
           <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
             These signals contributed to the current model-generated risk level.
@@ -197,5 +215,59 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="{{ url_for('static', filename='js/map.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script>
+    function saveDashKey() {
+      const k = document.getElementById('dashGmapsKey').value.trim();
+      if (k) {
+        localStorage.setItem('PW_GMAPS_KEY', k);
+        activateGoogleMaps();
+      } else {
+        alert('Please enter a Google Maps API Key.');
+      }
+    }
+    function activateGoogleMaps() {
+      const k = document.getElementById('dashGmapsKey').value.trim() || localStorage.getItem('PW_GMAPS_KEY');
+      if (k) {
+        loadGoogleMapsApi(k, () => initGoogleMap('map'));
+      } else {
+        const userKey = prompt('Please enter your Google Maps API Key to load Google Maps:');
+        if (userKey) {
+          localStorage.setItem('PW_GMAPS_KEY', userKey.trim());
+          document.getElementById('dashGmapsKey').value = userKey.trim();
+          loadGoogleMapsApi(userKey.trim(), () => initGoogleMap('map'));
+        }
+      }
+    }
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+      const newTheme = currentTheme === "dark" ? "light" : "dark";
+      applyTheme(newTheme);
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("PW_THEME", "dark");
+        const btn = document.getElementById("globalThemeBtn");
+        if (btn) btn.innerHTML = '<i class="fas fa-moon" style="color:#7aa6ff;"></i> <span>Dark Mode</span>';
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("PW_THEME", "light");
+        const btn = document.getElementById("globalThemeBtn");
+        if (btn) btn.innerHTML = '<i class="fas fa-sun" style="color:#d97706;"></i> <span>Light Mode</span>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem("PW_THEME") || "light";
+      applyTheme(savedTheme);
+
+      const saved = localStorage.getItem('PW_GMAPS_KEY');
+      if (saved) {
+        document.getElementById('dashGmapsKey').value = saved;
+        loadGoogleMapsApi(saved, () => initGoogleMap('map'));
+      }
+    });
+  </script>
 </body>
 </html>

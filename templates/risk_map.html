@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PandemicWatch AI &mdash; India Risk Map</title>
+  <!-- Leaflet CSS for map rendering -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <style>
@@ -18,7 +19,7 @@
       font-size: 26px;
       font-weight: 900;
       letter-spacing: 0.25em;
-      color: #fff;
+      color: var(--text-heading, #0f172a);
       margin-bottom: 8px;
     }
     .risk-legend-row {
@@ -28,11 +29,179 @@
       font-size: 14px;
       font-weight: 700;
       font-family: 'JetBrains Mono', monospace;
+      flex-wrap: wrap;
     }
     .legend-tag {
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    /* Google Maps Engine Controls Toolbar */
+    .map-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card, #ffffff);
+      border: 1px solid var(--border, #e2e8f0);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: var(--card-shadow, 0 2px 8px rgba(0,0,0,0.04));
+    }
+    .map-toggle-btn {
+      background: #f8fafc;
+      border: 1px solid var(--border, #e2e8f0);
+      color: var(--muted, #64748b);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .map-toggle-btn:hover {
+      color: var(--text-heading, #0f172a);
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+    .map-toggle-btn.active {
+      background: #0d9488;
+      border-color: #0d9488;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Map container */
+    #googleMap {
+      height: 620px;
+      width: 100%;
+      border-radius: 10px;
+      background: #f1f5f9;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Google Maps Dark Tile Inversion Filter (When dark mode is manually clicked) */
+    .google-dark-tiles .leaflet-tile {
+      filter: brightness(0.65) invert(1) contrast(2.6) hue-rotate(200deg) saturate(0.35) brightness(0.85) !important;
+    }
+
+    /* Custom Pulsing Risk Marker Pins */
+    .risk-marker-container {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .risk-marker-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      z-index: 2;
+    }
+    .risk-marker-pulse {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: risk-pulse 1.8s infinite ease-out;
+      z-index: 1;
+    }
+    .marker-high .risk-marker-dot {
+      background: #ef4444;
+      box-shadow: 0 0 12px #ef4444;
+    }
+    .marker-high .risk-marker-pulse {
+      background: #ef4444;
+    }
+    .marker-med .risk-marker-dot {
+      background: #d97706;
+      box-shadow: 0 0 10px #d97706;
+    }
+    .marker-med .risk-marker-pulse {
+      background: #d97706;
+      animation-duration: 2.4s;
+    }
+    .marker-low .risk-marker-dot {
+      background: #16a34a;
+      box-shadow: 0 0 8px #16a34a;
+    }
+    .marker-low .risk-marker-pulse {
+      background: #16a34a;
+      animation-duration: 3s;
+    }
+
+    @keyframes risk-pulse {
+      0% {
+        transform: scale(0.5);
+        opacity: 0.8;
+      }
+      70% {
+        transform: scale(1.4);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Region state quick selector pills */
+    .state-pill {
+      background: var(--card, #ffffff);
+      border: 1px solid var(--border, #e2e8f0);
+      color: #334155;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .state-pill:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+    .state-pill.active {
+      border-color: var(--accent, #0d9488);
+      background: rgba(13, 148, 136, 0.1);
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    /* Custom Leaflet Light Popup */
+    .leaflet-popup-content-wrapper {
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+      color: #0f172a !important;
+      padding: 4px !important;
+    }
+    .leaflet-popup-tip {
+      background: #ffffff !important;
+    }
+    .leaflet-popup-content {
+      margin: 10px 14px !important;
+      line-height: 1.5 !important;
     }
   </style>
 </head>
@@ -51,17 +220,22 @@
       <a href="{{ url_for('disease_analysis_page') }}" class="pw-nav-item"><i class="fas fa-microscope"></i> Disease Analysis</a>
       <a href="{{ url_for('risk_prediction_page') }}" class="pw-nav-item"><i class="fas fa-brain"></i> AI/ML Engine</a>
       <a href="{{ url_for('risk_map_page') }}" class="pw-nav-item active"><i class="fas fa-map-marked-alt"></i> Risk Map</a>
-      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ff5c7c;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
+      <a href="{{ url_for('alerts_page') }}" class="pw-nav-item"><i class="fas fa-bell"></i> Alerts <span style="background:#ef4444;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;">3</span></a>
       <a href="{{ url_for('historical_page') }}" class="pw-nav-item"><i class="fas fa-history"></i> Historical</a>
       <a href="{{ url_for('reports_page') }}" class="pw-nav-item"><i class="fas fa-file-alt"></i> Reports</a>
     </nav>
 
     <div class="pw-user-bar">
+      <!-- Theme Switcher Button -->
+      <button class="theme-toggle-btn" id="globalThemeBtn" onclick="toggleTheme()" title="Switch Light/Dark Theme">
+        <i class="fas fa-sun" style="color:#d97706;"></i> <span>Light Mode</span>
+      </button>
+
       {% if current_user %}
         <span>👤 <strong>{{ current_user.name }}</strong> <span class="pw-role-tag">{{ current_user.role }}</span></span>
         <a href="{{ url_for('logout') }}" class="pw-btn-logout">Logout</a>
       {% else %}
-        <a href="{{ url_for('login') }}" style="color:var(--accent);">👤 Login</a>
+        <a href="{{ url_for('login') }}" style="color:var(--accent);font-weight:600;">👤 Login</a>
         <a href="{{ url_for('register') }}" style="color:var(--muted);font-size:12px;">Sign Up</a>
       {% endif %}
     </div>
@@ -79,70 +253,111 @@
     <div class="map-header-box">
       <div class="map-country-title">INDIA</div>
       <div class="risk-legend-row">
-        <span class="legend-tag" style="color:#4ade80;">🟢 Low Risk</span>
-        <span class="legend-tag" style="color:#facc15;">🟡 Medium Risk</span>
-        <span class="legend-tag" style="color:#ff5c7c;">🔴 High Risk</span>
+        <span class="legend-tag" style="color:#16a34a;">🟢 Low Risk</span>
+        <span class="legend-tag" style="color:#d97706;">🟡 Medium Risk</span>
+        <span class="legend-tag" style="color:#ef4444;">🔴 High Risk</span>
       </div>
+    </div>
+
+    <!-- Google Maps Toolbar: Layer Styles & Controls -->
+    <div class="map-toolbar">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-size:12.5px;font-weight:700;color:var(--text-heading,#0f172a);display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;margin-right:6px;">
+          <i class="fab fa-google" style="color:#4285F4;font-size:15px;"></i> Google Maps Layer:
+        </span>
+        <button id="btnGRoadmap" class="map-toggle-btn active" onclick="setGoogleMapMode('roadmap')">
+          <i class="fas fa-map"></i> Google Standard (White)
+        </button>
+        <button id="btnGSatellite" class="map-toggle-btn" onclick="setGoogleMapMode('hybrid')">
+          <i class="fas fa-satellite"></i> Google Satellite
+        </button>
+        <button id="btnGTerrain" class="map-toggle-btn" onclick="setGoogleMapMode('terrain')">
+          <i class="fas fa-mountain"></i> Google Terrain
+        </button>
+        <button id="btnGDark" class="map-toggle-btn" onclick="setGoogleMapMode('dark')">
+          <i class="fas fa-moon"></i> Google Dark
+        </button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <button class="map-toggle-btn" onclick="resetMapView()" title="Reset to Center of India">
+          <i class="fas fa-crosshairs"></i> Reset India View
+        </button>
+        <span style="font-size:11.5px;color:#16a34a;background:#f0fdf4;padding:5px 10px;border-radius:6px;border:1px solid #86efac;font-family:'JetBrains Mono',monospace;display:inline-flex;align-items:center;gap:6px;font-weight:600;">
+          <i class="fas fa-check-circle"></i> Live Google Map Feed
+        </span>
+      </div>
+    </div>
+
+    <!-- Quick Regional Jump Bar -->
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;margin-bottom:14px;" id="statePillsBar">
+      <!-- Populated via script: Tamil Nadu, Kerala, Maharashtra, etc. -->
     </div>
 
     <!-- Map and Region Click Info Grid -->
     <div style="display:grid;grid-template-columns:3fr 2fr;gap:24px;">
 
-      <!-- Leaflet Map Container -->
-      <div class="pw-card" style="padding:14px;">
-        <div id="map" style="height:620px;border-radius:10px;"></div>
+      <!-- Primary Google Map Card -->
+      <div class="pw-card" style="padding:14px;position:relative;">
+        <div id="googleMap"></div>
+
+        <!-- Google Maps Branding Badge -->
+        <div style="position:absolute;bottom:26px;left:26px;z-index:999;background:rgba(255,255,255,0.94);backdrop-filter:blur(6px);padding:4px 12px;border-radius:6px;font-size:12px;border:1px solid rgba(0,0,0,0.12);display:flex;align-items:center;gap:7px;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+          <i class="fab fa-google" style="color:#4285F4;font-size:14px;"></i>
+          <span style="color:#0f172a;font-weight:700;letter-spacing:0.4px;font-family:'JetBrains Mono',monospace;">Google Maps Engine</span>
+        </div>
       </div>
 
       <!-- Right Column: Exact User Wireframe for Region Click & AI Explanation -->
       <div>
 
         <!-- When the user clicks a region: Tamil Nadu -->
-        <div class="pw-card" style="border-left:5px solid var(--high);margin-bottom:20px;">
+        <div class="pw-card" style="border-left:5px solid var(--high,#ef4444);margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
             <div>
-              <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;">Selected Region</div>
-              <h2 style="font-size:24px;font-weight:800;color:#fff;margin:2px 0 0 0;" id="rrRegionName">Tamil Nadu</h2>
+              <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;font-weight:600;">Selected Region</div>
+              <h2 style="font-size:24px;font-weight:800;color:var(--text-heading,#0f172a);margin:2px 0 0 0;" id="rrRegionName">Tamil Nadu</h2>
             </div>
             <span class="status-pill status-high" id="rrRiskBadge" style="font-size:13px;padding:5px 12px;">
               Risk Level: <strong id="rrRiskLevel" style="margin-left:4px;">HIGH</strong>
             </span>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;background:rgba(0,0,0,0.35);border-radius:8px;padding:16px;margin-bottom:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;background:#f8fafc;border:1px solid var(--border,#e2e8f0);border-radius:8px;padding:16px;margin-bottom:16px;">
             <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Risk Score:</div>
-              <div style="font-size:36px;font-weight:800;color:#ff5c7c;font-family:'JetBrains Mono',monospace;" id="rrRiskScore">72</div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;">Risk Score:</div>
+              <div style="font-size:36px;font-weight:800;color:#ef4444;font-family:'JetBrains Mono',monospace;" id="rrRiskScore">72</div>
             </div>
             <div>
-              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Detected Signals:</div>
-              <div style="font-size:36px;font-weight:800;color:#7aa6ff;font-family:'JetBrains Mono',monospace;" id="rrDetectedSignals">18</div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;">Detected Signals:</div>
+              <div style="font-size:36px;font-weight:800;color:#2563eb;font-family:'JetBrains Mono',monospace;" id="rrDetectedSignals">18</div>
             </div>
           </div>
 
           <div style="margin-bottom:14px;">
-            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Top Disease:</div>
-            <div style="font-size:17px;font-weight:700;color:#fff;" id="rrTopDisease">Respiratory illness</div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;">Top Disease:</div>
+            <div style="font-size:17px;font-weight:700;color:var(--text-heading,#0f172a);" id="rrTopDisease">Respiratory illness</div>
           </div>
 
           <div style="font-size:12.5px;color:var(--muted);">
-            Last Updated: <strong style="color:#fff;" id="rrLastUpdated">23 Sep 2026</strong>
+            Last Updated: <strong style="color:var(--text-heading,#0f172a);" id="rrLastUpdated">23 Sep 2026</strong>
           </div>
         </div>
 
         <!-- 🤖 AI Risk Explanation matching exact user wireframe -->
-        <div class="pw-card" style="border:1px solid rgba(62,226,192,0.3);border-left:5px solid var(--accent);">
+        <div class="pw-card" style="border:1px solid var(--border,#e2e8f0);border-left:5px solid var(--accent,#0d9488);">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <span style="font-size:20px;">🤖</span>
-            <h4 style="font-weight:800;font-size:17px;color:#fff;margin:0;">AI Risk Explanation</h4>
+            <h4 style="font-weight:800;font-size:17px;color:var(--text-heading,#0f172a);margin:0;">AI Risk Explanation</h4>
           </div>
           <div style="font-size:13.5px;color:var(--muted);margin-bottom:12px;">The system detected:</div>
-          <div style="line-height:2.2;font-size:14px;color:#dce4f2;" id="rrExplanationList">
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Increase in disease-related reports</div>
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Multiple reports from the same region</div>
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Increasing symptom mentions</div>
-            <div><span style="color:#4ade80;font-weight:bold;margin-right:8px;">✓</span> Environmental changes</div>
+          <div style="line-height:2.2;font-size:14px;color:#334155;" id="rrExplanationList">
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Increase in disease-related reports</div>
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Multiple reports from the same region</div>
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Increasing symptom mentions</div>
+            <div><span style="color:#16a34a;font-weight:bold;margin-right:8px;">✓</span> Environmental changes</div>
           </div>
-          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted);">
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border,#e2e8f0);font-size:12.5px;color:var(--muted);">
             These signals contributed to the current model-generated risk level.
           </div>
         </div>
@@ -153,11 +368,375 @@
 
   </main>
 
+  <!-- Leaflet Map Library for high performance Google Maps tile rendering -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      initIndiaMap('map');
+    // Regional dataset matching exact wireframe metrics
+    const REGION_DATA = {
+      "Tamil Nadu": {
+        lat: 13.0827, lng: 80.2707, district: "Chennai", score: 72, level: "HIGH", signals: 18,
+        disease: "Respiratory illness", updated: "23 Sep 2026", color: "#ef4444",
+        explanation: [
+          "Increase in disease-related reports",
+          "Multiple reports from the same region",
+          "Increasing symptom mentions",
+          "Environmental changes"
+        ]
+      },
+      "Kerala": {
+        lat: 11.2588, lng: 75.7804, district: "Kozhikode", score: 84, level: "HIGH", signals: 24,
+        disease: "Nipah Virus", updated: "23 Sep 2026", color: "#ef4444",
+        explanation: [
+          "Sentinel encephalitis admissions cluster",
+          "Correlated fruit bat roosting activity",
+          "Elevated public chatter and hospital queries",
+          "Monsoon high humidity incubation window"
+        ]
+      },
+      "Maharashtra": {
+        lat: 19.0760, lng: 72.8777, district: "Mumbai / Nagpur", score: 67, level: "MEDIUM", signals: 14,
+        disease: "Avian Influenza (H5N1)", updated: "23 Sep 2026", color: "#d97706",
+        explanation: [
+          "Commercial poultry mortality die-offs",
+          "Central Asian Flyway wild waterfowl arrivals",
+          "Moderate respiratory symptom keywords",
+          "Inter-district containment protocol ongoing"
+        ]
+      },
+      "Karnataka": {
+        lat: 12.9716, lng: 77.5946, district: "Bengaluru", score: 24, level: "NORMAL", signals: 3,
+        disease: "Seasonal baseline", updated: "23 Sep 2026", color: "#16a34a",
+        explanation: [
+          "Normal baseline vector counts",
+          "No localized fever clusters detected",
+          "Syndromic search trends within expected bounds",
+          "Standard surveillance conditions"
+        ]
+      },
+      "Delhi": {
+        lat: 28.6139, lng: 77.2090, district: "New Delhi", score: 38, level: "MEDIUM", signals: 11,
+        disease: "ILI / SARI Viral", updated: "23 Sep 2026", color: "#d97706",
+        explanation: [
+          "Seasonal flu search spike (+18%)",
+          "Sentinel pediatric fever OPD visits",
+          "Air quality index impact on respiratory complaints",
+          "Controlled positivity rates"
+        ]
+      },
+      "West Bengal": {
+        lat: 22.5726, lng: 88.3639, district: "Kolkata", score: 48, level: "MEDIUM", signals: 9,
+        disease: "Acute Watery Diarrhoea", updated: "23 Sep 2026", color: "#d97706",
+        explanation: [
+          "Localized water pipeline contamination reports",
+          "Modest AWD admissions spike in northern wards",
+          "Water sampling dispatched",
+          "Chlorination treatment initiated"
+        ]
+      },
+      "Gujarat": {
+        lat: 23.0225, lng: 72.5714, district: "Ahmedabad", score: 32, level: "NORMAL", signals: 5,
+        disease: "Seasonal Dengue Baseline", updated: "23 Sep 2026", color: "#16a34a",
+        explanation: [
+          "Vector breeding index at seasonal baseline",
+          "No anomalous clinical hospital clusters",
+          "Municipal fogging protocols active",
+          "Routine weekly surveillance"
+        ]
+      },
+      "Uttar Pradesh": {
+        lat: 26.8467, lng: 80.9462, district: "Lucknow", score: 44, level: "MEDIUM", signals: 8,
+        disease: "Enteric / Fever Undifferentiated", updated: "23 Sep 2026", color: "#d97706",
+        explanation: [
+          "Post-monsoon water logging reports",
+          "Moderate rise in OPD fever cases",
+          "Community health worker outreach ongoing",
+          "Early alert threshold monitored"
+        ]
+      }
+    };
+
+    let map = null;
+    let currentTileLayer = null;
+    let markersLayer = null;
+    let selectedRegionName = "Tamil Nadu";
+    let activeMode = "roadmap"; // Default to White / Standard Google Maps
+
+    // Google Maps Tile Configurations
+    const googleTileConfigs = {
+      roadmap: {
+        url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+        options: {
+          maxZoom: 20,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+          attribution: '&copy; Google Maps'
+        },
+        darkClass: false
+      },
+      hybrid: {
+        url: 'https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+        options: {
+          maxZoom: 20,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+          attribution: '&copy; Google Maps &mdash; Satellite'
+        },
+        darkClass: false
+      },
+      terrain: {
+        url: 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+        options: {
+          maxZoom: 20,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+          attribution: '&copy; Google Maps &mdash; Terrain'
+        },
+        darkClass: false
+      },
+      dark: {
+        url: 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+        options: {
+          maxZoom: 20,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+          attribution: '&copy; Google Maps'
+        },
+        darkClass: true
+      }
+    };
+
+    /**
+     * Initialize Google Maps Engine
+     */
+    function initMap() {
+      const container = document.getElementById("googleMap");
+      if (!container) return;
+
+      // Center on India
+      map = L.map("googleMap", {
+        center: [22.2, 79.5],
+        zoom: 5,
+        zoomControl: true,
+        scrollWheelZoom: true
+      });
+
+      // Apply initial layer mode (Google Standard White Roadmap)
+      setGoogleMapMode('roadmap');
+
+      // Add Outbreak Risk Markers
+      markersLayer = L.layerGroup().addTo(map);
+      renderRiskMarkers();
+
+      // Render State Quick Selector Pills
+      renderStatePills();
+
+      // Default selection: Tamil Nadu
+      selectRegion("Tamil Nadu");
+
+      // Invalidate size to ensure zero display glitches
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 100);
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 500);
+    }
+
+    /**
+     * Switch Google Map Layer Mode (Roadmap, Hybrid, Terrain, Dark)
+     */
+    function setGoogleMapMode(mode) {
+      if (!googleTileConfigs[mode] || !map) return;
+      activeMode = mode;
+
+      const mapContainer = document.getElementById("googleMap");
+      const cfg = googleTileConfigs[mode];
+
+      // Remove existing tile layer
+      if (currentTileLayer) {
+        map.removeLayer(currentTileLayer);
+      }
+
+      // Add new Google Maps Tile Layer
+      currentTileLayer = L.tileLayer(cfg.url, cfg.options).addTo(map);
+
+      // Handle Dark Night Inversion Filter
+      if (cfg.darkClass) {
+        mapContainer.classList.add("google-dark-tiles");
+      } else {
+        mapContainer.classList.remove("google-dark-tiles");
+      }
+
+      // Update Toolbar Buttons
+      ['btnGRoadmap', 'btnGSatellite', 'btnGTerrain', 'btnGDark'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.remove('active');
+      });
+
+      if (mode === 'roadmap') document.getElementById('btnGRoadmap')?.classList.add('active');
+      if (mode === 'hybrid') document.getElementById('btnGSatellite')?.classList.add('active');
+      if (mode === 'terrain') document.getElementById('btnGTerrain')?.classList.add('active');
+      if (mode === 'dark') document.getElementById('btnGDark')?.classList.add('active');
+    }
+
+    /**
+     * Render Interactive Outbreak Risk Pins with Glowing Pulses
+     */
+    function renderRiskMarkers() {
+      if (!markersLayer) return;
+      markersLayer.clearLayers();
+
+      Object.keys(REGION_DATA).forEach(regionName => {
+        const reg = REGION_DATA[regionName];
+        const markerClass = reg.level === "HIGH" ? "marker-high" : (reg.level === "MEDIUM" ? "marker-med" : "marker-low");
+
+        // Custom HTML Marker Pin
+        const customIcon = L.divIcon({
+          className: 'custom-risk-icon',
+          html: `
+            <div class="risk-marker-container ${markerClass}" title="${regionName}: Risk ${reg.score} [${reg.level}]">
+              <div class="risk-marker-pulse"></div>
+              <div class="risk-marker-dot"></div>
+            </div>
+          `,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+
+        const marker = L.marker([reg.lat, reg.lng], { icon: customIcon });
+
+        // Tooltip
+        marker.bindTooltip(`
+          <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;">
+            <strong style="color:#0f172a;">${regionName}</strong><br>
+            <span style="color:${reg.color};">Risk Score: ${reg.score} [${reg.level}]</span>
+          </div>
+        `, {
+          direction: 'top',
+          offset: [0, -10],
+          opacity: 0.95
+        });
+
+        // Click Event
+        marker.on('click', () => {
+          selectRegion(regionName);
+        });
+
+        markersLayer.addLayer(marker);
+      });
+    }
+
+    /**
+     * Quick State Selection Pills
+     */
+    function renderStatePills() {
+      const container = document.getElementById("statePillsBar");
+      if (!container) return;
+
+      container.innerHTML = Object.keys(REGION_DATA).map(name => {
+        const reg = REGION_DATA[name];
+        const dotColor = reg.color;
+        const activeClass = name === selectedRegionName ? 'active' : '';
+        return `
+          <button class="state-pill ${activeClass}" onclick="selectRegion('${name}')" id="pill-${name.replace(/\s+/g, '')}">
+            <span style="color:${dotColor};font-size:11px;">●</span>
+            ${name} <strong style="font-size:11px;opacity:0.85;">${reg.score}</strong>
+          </button>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Select a Region: Pan Map, Update Cards, and Update AI Explanation
+     */
+    function selectRegion(regionName) {
+      const reg = REGION_DATA[regionName];
+      if (!reg) return;
+      selectedRegionName = regionName;
+
+      // Update State Pills UI
+      document.querySelectorAll('.state-pill').forEach(p => p.classList.remove('active'));
+      const pill = document.getElementById(`pill-${regionName.replace(/\s+/g, '')}`);
+      if (pill) pill.classList.add('active');
+
+      // Pan smoothly to selected region on Google Map
+      if (map) {
+        map.flyTo([reg.lat, reg.lng], 6.5, {
+          duration: 0.8,
+          easeLinearity: 0.25
+        });
+      }
+
+      // Update Region Risk Card elements (exact user wireframe)
+      const elRegion = document.getElementById("rrRegionName");
+      const elScore = document.getElementById("rrRiskScore");
+      const elLevel = document.getElementById("rrRiskLevel");
+      const elBadge = document.getElementById("rrRiskBadge");
+      const elSignals = document.getElementById("rrDetectedSignals");
+      const elDisease = document.getElementById("rrTopDisease");
+      const elUpdated = document.getElementById("rrLastUpdated");
+
+      if (elRegion) elRegion.textContent = regionName;
+      if (elScore) {
+        elScore.textContent = reg.score;
+        elScore.style.color = reg.color;
+      }
+      if (elLevel) elLevel.textContent = reg.level;
+      if (elSignals) elSignals.textContent = reg.signals;
+      if (elDisease) elDisease.textContent = reg.disease;
+      if (elUpdated) elUpdated.textContent = reg.updated;
+
+      if (elBadge) {
+        elBadge.className = "status-pill " + (reg.level === "HIGH" ? "status-high" : (reg.level === "MEDIUM" ? "status-med" : "status-low"));
+      }
+
+      // Update 🤖 AI Risk Explanation Checklist
+      const elExplList = document.getElementById("rrExplanationList");
+      if (elExplList) {
+        elExplList.innerHTML = reg.explanation.map(item => `
+          <div><span style="color: #16a34a; font-weight: bold; margin-right: 8px;">✓</span> ${item}</div>
+        `).join("");
+      }
+    }
+
+    /**
+     * Reset Map View to Center of India
+     */
+    function resetMapView() {
+      if (!map) return;
+      map.flyTo([22.2, 79.5], 5, { duration: 0.8 });
+    }
+
+    /**
+     * Theme Toggle Handler (Light / Dark)
+     */
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+      const newTheme = currentTheme === "dark" ? "light" : "dark";
+      applyTheme(newTheme);
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("PW_THEME", "dark");
+        const btn = document.getElementById("globalThemeBtn");
+        if (btn) btn.innerHTML = '<i class="fas fa-moon" style="color:#7aa6ff;"></i> <span>Dark Mode</span>';
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("PW_THEME", "light");
+        const btn = document.getElementById("globalThemeBtn");
+        if (btn) btn.innerHTML = '<i class="fas fa-sun" style="color:#d97706;"></i> <span>Light Mode</span>';
+      }
+    }
+
+    // Window resize handler to maintain full viewport responsiveness
+    window.addEventListener("resize", () => {
+      if (map) map.invalidateSize();
+    });
+
+    // Initialize immediately on DOM load
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("PW_THEME") || "light";
+      applyTheme(savedTheme);
+      initMap();
     });
   </script>
 </body>

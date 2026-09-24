@@ -40,82 +40,44 @@ with app.app_context():
 
 @app.context_processor
 def inject_user():
-    """Inject currently logged-in user into all Jinja templates."""
-    user = None
-    user_id = session.get("user_id")
-    if user_id:
-        user = get_user_by_id(user_id)
-    return {"current_user": user}
+    """Inject active user profile into all Jinja templates (no login required)."""
+    return {
+        "current_user": {
+            "id": 1,
+            "name": "Health Officer",
+            "role": "Epidemic Intelligence Analyst",
+            "email": "officer@pandemicwatch.ai",
+            "organization": "National Public Health Agency",
+        }
+    }
 
 
 # ---------------------------------------------------------
-# AUTHENTICATION & ACCESS CONTROL
+# DIRECT ACCESS CONTROL (NO LOGIN REQUIRED)
 # ---------------------------------------------------------
 
 @app.route("/")
 def index():
-    """Root route redirecting to dashboard or login."""
-    if "user_id" in session:
-        return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
+    """Root route redirecting directly to dashboard without requiring login."""
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """User login endpoint matching exact wireframe."""
-    if request.method == "POST":
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-
-        user = authenticate_user(email, password)
-        if user:
-            session["user_id"] = user["id"]
-            session["user_email"] = user["email"]
-            session["user_name"] = user["name"]
-            session["user_role"] = user["role"]
-            flash("Authentication successful. Welcome to PandemicWatch AI.", "success")
-            next_page = request.args.get("next")
-            return redirect(next_page or url_for("dashboard"))
-        else:
-            flash("Invalid email or password. Please try demo credentials.", "error")
-
-    return render_template("login.html")
+    """Bypass login and redirect directly to dashboard."""
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """User registration endpoint for health officers & researchers."""
-    if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        role = request.form.get("role", "Public Health Analyst").strip()
-        organization = request.form.get("organization", "Health Surveillance Dept").strip()
-
-        if not name or not email or not password:
-            flash("All fields are required.", "error")
-            return render_template("register.html")
-
-        try:
-            user = create_user(email, name, password, role, organization)
-            session["user_id"] = user["id"]
-            session["user_email"] = user["email"]
-            session["user_name"] = user["name"]
-            session["user_role"] = user["role"]
-            flash("Account successfully registered! Logged in as " + user["name"], "success")
-            return redirect(url_for("dashboard"))
-        except Exception as e:
-            flash(f"Registration error: {e}. Email may already be registered.", "error")
-
-    return render_template("register.html")
+    """Bypass registration and redirect directly to dashboard."""
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/logout")
 def logout():
-    """Clear session and log user out."""
-    session.clear()
-    flash("You have been signed out.", "info")
-    return redirect(url_for("login"))
+    """Redirect to dashboard."""
+    return redirect(url_for("dashboard"))
 
 
 # ---------------------------------------------------------
@@ -177,8 +139,7 @@ def risk_prediction_page():
 
 @app.route("/risk-map")
 def risk_map_page():
-    """Dedicated India Outbreak Risk Map view with 🟢 🟡 🔴 legend and Tamil Nadu region breakdown."""
-    return render_template("risk_map.html")
+    return render_template("risk_map.html", google_maps_api_key=os.getenv("GOOGLE_MAPS_API_KEY", ""))
 
 
 @app.route("/alerts")

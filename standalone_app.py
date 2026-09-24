@@ -402,7 +402,7 @@ DASHBOARD_PAGE = """
   };
 
   const map = L.map('map').setView([20.5, 78.9], 4.8);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'PandemicWatch AI &copy; Esri' }).addTo(map);
 
   Object.keys(REGIONS).forEach(name => {
     const reg = REGIONS[name];

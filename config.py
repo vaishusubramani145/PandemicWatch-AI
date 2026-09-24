@@ -7,7 +7,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "pandemicwatch-ai-secret-key-2026")
-DATABASE_PATH = os.path.join(BASE_DIR, "database", "pandemicwatch.db")
+if os.getenv("VERCEL"):
+    DATABASE_PATH = "/tmp/pandemicwatch.db"
+else:
+    DATABASE_PATH = os.path.join(BASE_DIR, "database", "pandemicwatch.db")
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
 
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 RISK_MODEL_PATH = os.path.join(MODELS_DIR, "risk_model.pkl")
